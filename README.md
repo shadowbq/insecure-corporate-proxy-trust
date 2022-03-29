@@ -2,6 +2,8 @@
 
 Dealing with proxies that mess up our trust. Proxy https traffic as well as http is common in gov and large corporate companies. Some Proxies also [man-in-the-middle](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) generating certificates on the fly. 
 
+**Note: Make Sure your Date & Time is correct. This is step #1. Too large of time drift will cause SSL to fail.**
+
 ## Fetching the Proxy CA PEM 
 
 :lock: - Importing Trust
@@ -232,6 +234,20 @@ requests.packages.urllib3.disable_warnings()
 
 ```python
 import urllib3 urllib3.disable_warnings()
+```
+
+### ssl | python3
+
+:lock: Proper import for OpenSSL
+
+When looking at where SSL certificates are loaded, you can analyse these location
+
+`$> python -c "import ssl; print(ssl.get_default_verify_paths())"`
+
+Adding the MitM CA to one of these locations should do the trick
+
+```
+DefaultVerifyPaths(cafile=None, capath='/usr/lib/ssl/certs', openssl_cafile_env='SSL_CERT_FILE', openssl_cafile='/usr/lib/ssl/cert.pem', openssl_capath_env='SSL_CERT_DIR', openssl_capath='/usr/lib/ssl/certs')
 ```
 
 ## .gemrc | ruby
