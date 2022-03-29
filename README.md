@@ -229,9 +229,6 @@ pip config set global.cert path/to/ca-bundle.crt
 pip config list
 ```
 
-# Bonus while we are here...
-
-
 ### urllib3 | python 
 
 :anger: Insecure - Not Using Proxy Trust
