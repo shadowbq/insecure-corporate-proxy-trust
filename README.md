@@ -25,6 +25,26 @@ Select the `Enable` link.
 
 Ex: wget, git and almost every console application which connects to internet. This alone is *not* enough to trust the SSL MitM Proxy.
 
+The ***Mess of linux ENV** for proxy configurations. Note Most HTTPS Proxies are a mirror of the HTTP proxy.
+
+```shell
+export HTTP_PROXY=http://proxy.example.com:80
+export HTTPS_PROXY=$HTTP_PROXY
+
+export NO_PROXY=127.0.0.1,169.254.169.254,localhost
+export no_proxy=$NO_PROXY
+export noProxy=$NO_PROXY
+export noproxy=$NO_PROXY
+
+export http_proxy=$HTTP_PROXY
+export https_proxy=$HTTPS_PROXY
+
+export ftp_proxy=http://<YOUR.FTP-PROXY.URL:PORT>
+export socks_proxy=http://<YOUR.SOCKS-PROXY.URL:PORT>
+export FTP_PROXY=$ftp_proxy
+export SOCKS_PROXY=$socks_proxy
+```
+
 One-time Shell ENV
 
 ```
@@ -57,6 +77,16 @@ Configuration for perm solution
 :anger: Insecure - Not Using Proxy Trust
 
 `echo "check_certificate = off" >> ~/.wgetrc`
+
+## sudo | Special Shell Considerations
+
+`sudo` does not pass environment variables. For that you can add to sudoers
+
+```
+$> vi /etc/sudoers.d/00-environment 
+Defaults env_keep += "http_proxy https_proxy ftp_proxy"
+```
+
 
 ## pip | python
 
@@ -158,6 +188,12 @@ yarn config set strict-ssl false
 
 ## .gitconfig | git
 
+```
+$> git config — global http.proxy $HTTP_PROXY
+$> git config — global https.proxy $HTTP_PROXY
+```
+-- or --
+
 ```ini
 [http]
     proxy = http://proxy:port
@@ -168,6 +204,16 @@ yarn config set strict-ssl false
 :anger: Insecure - Not Using Proxy Trust
 
 `git config --global http.sslVerify false`
+
+### git over SSH
+This is an example, and one is packaged into the config that ships. Add the following to your `~/.ssh/config` file:
+
+```
+host github.com
+     port 22
+     user git
+     ProxyCommand connect-proxy -S <YOUR.SSH-PROXY.URL:PORT> %h %p
+````
 
 ## env system variables (windows)
 
