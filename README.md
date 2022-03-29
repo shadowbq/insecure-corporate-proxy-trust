@@ -222,6 +222,16 @@ trusted-host = pypi.python.org
 
 ref: https://stackoverflow.com/questions/25981703/pip-install-fails-with-connection-error-ssl-certificate-verify-failed-certi
 
+:lock: - Trust the Intermediate Cert
+
+```
+pip config set global.cert path/to/ca-bundle.crt
+pip config list
+```
+
+# Bonus while we are here...
+
+
 ### urllib3 | python 
 
 :anger: Insecure - Not Using Proxy Trust
@@ -308,10 +318,18 @@ yarn config set strict-ssl false
 
 ## .gitconfig | git
 
+:lock: - Importing Trust
+
+```
+git config --global http.sslVerify true
+git config --global http.sslCAInfo path/to/ca-bundle.crt
+```
+
 ```
 $> git config — global http.proxy $HTTP_PROXY
 $> git config — global https.proxy $HTTP_PROXY
 ```
+
 -- or --
 
 ```ini
