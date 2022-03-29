@@ -1,5 +1,8 @@
 # Insecure Corporate Proxy Trust
 
+:lock: - The right way.  
+:anger: - The bad way.  
+
 Dealing with proxies that mess up our trust. Proxy https traffic as well as http is common in gov and large corporate companies. Some Proxies also [man-in-the-middle](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) generating certificates on the fly. 
 
 **Note: Make Sure your Date & Time is correct. This is step #1. Too large of time drift will cause SSL to fail.**
