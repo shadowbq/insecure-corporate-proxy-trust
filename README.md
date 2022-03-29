@@ -2,6 +2,73 @@
 
 Dealing with proxies that mess up our trust. Proxy https traffic as well as http is common in gov and large corporate companies. Some Proxies also [man-in-the-middle](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) generating certificates on the fly. 
 
+## Fetching the Proxy CA PEM 
+
+:lock: - Importing Trust
+
+If you use the 'openssl' tool, this is one way to get extract the CA cert for a particular server:
+
+`openssl s_client -showcerts -servername server -connect server:443 > cacert.pem`
+
+type "quit", followed by the "ENTER" key
+
+The certificate will have "BEGIN CERTIFICATE" and "END CERTIFICATE" markers.
+
+Validate the PEM data
+`openssl x509 -inform PEM -in certfile -text -out certdata` where certfile is the cert you extracted from logfile. Look in certdata.
+
+If you want to trust the certificate, you can add it to your CA certificate store or use it stand-alone as described. Just remember that the security is no better than the way you obtained the certificate.
+
+### Am I MitM proxied?
+
+No - I don't see a MitM Proxy
+
+```
+$ openssl s_client -connect pypi.python.org:443
+CONNECTED(00000003)
+depth=1 /C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert SHA2 Extended Validation Server CA
+verify error:num=20:unable to get local issuer certificate
+verify return:0
+---
+Certificate chain
+ 0 s:/businessCategory=Private Organization/1.3.6.1.4.1.311.60.2.1.3=US/1.3.6.1.4.1.311.60.2.1.2=Delaware/serialNumber=3359300/street=16 Allen Rd/postalCode=03894-4801/C=US/ST=NH/L=Wolfeboro,/O=Python Software Foundation/CN=www.python.org
+   i:/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert SHA2 Extended Validation Server CA
+ 1 s:/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert SHA2 Extended Validation Server CA
+   i:/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert High Assurance EV Root CA
+```   
+
+Yes - There is a MitM ZScaler Proxy
+
+```
+openssl s_client -connect pypi.python.org:443
+CONNECTED(00000003)
+depth=2 C = US, ST = California, O = Zscaler Inc., OU = Zscaler Inc., CN = Zscaler Intermediate Root CA (zscalerthree.net), emailAddress = support@zscaler.com
+verify error:num=20:unable to get local issuer certificate
+verify return:1
+depth=1 C = US, ST = California, O = Zscaler Inc., OU = Zscaler Inc., CN = "Zscaler Intermediate Root CA (zscalerthree.net) (t) "
+verify return:1
+depth=0 CN = www.python.org
+verify return:1
+---
+Certificate chain
+ 0 s:CN = www.python.org
+   i:C = US, ST = California, O = Zscaler Inc., OU = Zscaler Inc., CN = "Zscaler Intermediate Root CA (zscalerthree.net) (t) "
+ 1 s:C = US, ST = California, O = Zscaler Inc., OU = Zscaler Inc., CN = "Zscaler Intermediate Root CA (zscalerthree.net) (t) "
+   i:C = US, ST = California, O = Zscaler Inc., OU = Zscaler Inc., CN = Zscaler Intermediate Root CA (zscalerthree.net), emailAddress = support@zscaler.com
+ 2 s:C = US, ST = California, O = Zscaler Inc., OU = Zscaler Inc., CN = Zscaler Intermediate Root CA (zscalerthree.net), emailAddress = support@zscaler.com
+   i:C = US, ST = California, L = San Jose, O = Zscaler Inc., OU = Zscaler Inc., CN = Zscaler Root CA, emailAddress = support@zscaler.com
+```   
+
+### Is the Intermediate CA Trusted?
+
+:anger: Insecure - Completely untrusted!
+
+```
+openssl s_client -connect pypi.python.org:443
+[...]
+Verification error: unable to get local issuer certificate
+```
+
 ## Dealing with Internal Untrusted / Unconfigured WebSites
 
 ### Chrome
@@ -77,6 +144,43 @@ Configuration for perm solution
 :anger: Insecure - Not Using Proxy Trust
 
 `echo "check_certificate = off" >> ~/.wgetrc`
+
+### curl 
+
+:anger: Insecure - Not Using Proxy Trust
+
+`curl -O --insecure --header 'Host: www.example.com' -I https://207.5.1.10/file.html`
+
+-- OR --
+
+:anger: Insecure - Not Using Proxy Trust
+
+`curl -k --header 'Host: www.example.com' -I https://207.5.1.10/file.html`
+
+Configuration for perm solution
+
+:anger: Insecure - Not Using Proxy Trust
+
+```
+$ vi $HOME/.curlrc
+insecure
+ftp-pasv
+```
+
+:lock: Adding Cert for `curl`
+
+```
+curl --cacert /path/to/my/ca.pem https://url
+curl --header 'Host: www.cyberciti.biz' --cacert /pth/to/my/ca.pem https://207.5.1.10/nixcraft.tar.gz
+```
+
+:lock: 
+
+```
+curl --proxy-cert ca.pem https://url
+```
+
+ref: https://curl.se/docs/sslcerts.html
 
 ## sudo | Special Shell Considerations
 
