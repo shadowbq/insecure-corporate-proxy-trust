@@ -283,6 +283,12 @@ DefaultVerifyPaths(cafile=None, capath='/usr/lib/ssl/certs', openssl_cafile_env=
 
 ## .gemrc | ruby
 
+:lock: - Importing Trust
+
+Using a `.bundle` config
+
+`bundle config ssl_ca_cert ./config/ca_root_certs/ZscalerRootCertificate-2048-SHA256.crt`
+
 :anger: Insecure - Not Using Proxy Trust
 
 ```
@@ -310,7 +316,7 @@ ERROR:  You must add /C=US/ST=California/L=San Jose/O=Zscaler Inc./OU=Zscaler In
 :lock: - Importing Trust
 
 ```shell
-$> set SSL_CERT_FILE=C:\RailsInstaller\cacert.pem
+$> export SSL_CERT_FILE=/etc/ssl/ca_root_certs/ZscalerRootCertificate-2048-SHA256.crt
 ```
 
 ref: https://gist.github.com/fnichol/867550
