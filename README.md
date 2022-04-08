@@ -346,6 +346,14 @@ strict-ssl=false
 
 ## yarn
 
+```
+  Error: unable to get local issuer certificate
+      at TLSSocket.onConnectSecure (node:_tls_wrap:1518:34)
+      at TLSSocket.emit (node:events:376:20)
+      at TLSSocket._finishInit (node:_tls_wrap:942:8)
+      at TLSWrap.ssl.onhandshakedone (node:_tls_wrap:716:12)
+```      
+
 :lock: - Importing Trust
 
 ```
