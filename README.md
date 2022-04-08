@@ -346,11 +346,28 @@ strict-ssl=false
 
 ## yarn
 
+:lock: - Importing Trust
+
+```
+yarn config set cafile /etc/ssl/ca_root_certs/ZscalerRootCertificate-2048-SHA256.crt
+```
+
 :anger: Insecure - Not Using Proxy Trust
 
 ```
 yarn config set strict-ssl false
 ```
+
+```
+yarn config set "strict-ssl" false -g
+```
+
+.yarnrc
+```
+cafile null
+strict-ssl false
+```
+
 
 ## .gitconfig | git
 
