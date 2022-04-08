@@ -7,6 +7,25 @@ Dealing with proxies that mess up our trust. Proxy https traffic as well as http
 
 **Note: Make Sure your Date & Time is correct. This is step #1. Too large of time drift will cause SSL to fail.**
 
+# Table of contents
+
+- [Insecure Corporate Proxy Trust](#insecure-corporate-proxy-trust)
+  - [Fetching the Proxy CA PEM](#fetching-the-proxy-ca-pem)
+  - [Dealing with Internal Untrusted / Unconfigured WebSites](#dealing-with-internal-untrusted--unconfigured-websites)
+  - [sudo | Special Shell Considerations](#sudo--special-shell-considerations)
+  - [pip | python](#pip--python)
+  - [.gemrc | ruby](#gemrc--ruby)
+  - [.npmrc | node](#npmrc--node)
+  - [.bowerrc | bower](#bowerrc--bower)
+  - [yarn](#yarn)
+  - [.gitconfig | git](#gitconfig--git)
+  - [env system variables (windows)](#env-system-variables-windows)
+  - [settings.json | visual studio code](#settingsjson--visual-studio-code)
+  - [add certificate to keychain | java](#add-certificate-to-keychain--java)
+  - [apt | Ubuntu & Debian Distros](#apt--ubuntu--debian-distros)
+
+
+
 ## Fetching the Proxy CA PEM 
 
 :lock: - Importing Trust
@@ -275,6 +294,15 @@ http_proxy: http://proxy:port
 
 ```gemfile
 source "http://rubygems.org"
+```
+
+```
+$> gem list rails --remote --all
+
+*** REMOTE GEMS ***
+
+ERROR:  SSL verification error at depth 2: unable to get local issuer certificate (20)
+ERROR:  You must add /C=US/ST=California/L=San Jose/O=Zscaler Inc./OU=Zscaler Inc./CN=Zscaler Root CA/emailAddress=support@zscaler.com to your local trusted store
 ```
 
 ### certs | ruby
