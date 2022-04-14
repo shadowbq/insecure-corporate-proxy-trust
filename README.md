@@ -11,7 +11,8 @@ All to often the internet provides ':anger: - The bad way' to shortcut these pol
 
 - [Insecure Corporate Proxy Trust](#insecure-corporate-proxy-trust)
   - [Fetching the Proxy CA PEM](#fetching-the-proxy-ca-pem)
-    - [I need a CRT not a CER (DER)](#i-need-a-crt-not-a-cer-der)
+    - [Export from a Managed OS](#export-from-a-managed-os)
+    - [Convert CER(DER) to a CRT(PEM)](#convert-cerder-to-a-crtpem)
     - [Checking for MitM proxied certificates?](#checking-for-mitm-proxied-certificates)
     - [Is the Intermediate CA Trusted?](#is-the-intermediate-ca-trusted)
   - [Browser Trusts](#browser-trusts)
@@ -65,7 +66,29 @@ Validate the PEM data
 
 If you want to trust the certificate, you can add it to your CA certificate store or use it stand-alone as described. Just remember that the security is no better than the way you obtained the certificate.
 
-### I need a CRT not a CER (DER)
+### Export from a Managed OS
+
+#### Windows
+
+1. Start → Run → Type "MMC" and hit enter
+1. Click "File", then "Add/Remove Snap-in"
+1. Add Certificates
+1. Select "Computer Account", hit "Next"
+1. Leave "Local Computer", click "Finish", then "Ok".
+1. Expand "Certificates", expand "Trusted Root Certification Authorities", then expand "Certificates". 
+1. Find "MyCorporate MITM CA", right click on it, select "All Tasks → Export"
+1. Export as "Base-64 encoded X.509 (.CER)" and follow the prompts. 
+
+#### MacOS
+
+1. Search -> Keychain Access
+2. Open (authorize as required)
+3. Click "System Keychains\System" on the left menu bar
+4. Find "MyCorporate MITM CA", right click on it, select "Export 'MyCorporate MITM CA'"
+5. Select "File Format → Privacy Enhanced Mail(pem)"
+6. Save file as .crt
+
+### Convert CER(DER) to a CRT(PEM)
 
 (Maybe you exported the CER/DER from a Keychain) 
 
