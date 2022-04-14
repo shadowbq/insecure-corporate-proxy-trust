@@ -12,36 +12,37 @@ All to often the internet provides ':anger: - The bad way' to shortcut these pol
 - [Insecure Corporate Proxy Trust](#insecure-corporate-proxy-trust)
   - [Fetching the Proxy CA PEM](#fetching-the-proxy-ca-pem)
     - [I need a CRT not a CER (DER)](#i-need-a-crt-not-a-cer-der)
-    - [Am I MitM proxied?](#am-i-mitm-proxied)
+    - [Checking for MitM proxied certificates?](#checking-for-mitm-proxied-certificates)
     - [Is the Intermediate CA Trusted?](#is-the-intermediate-ca-trusted)
   - [Browser Trusts](#browser-trusts)
     - [Proxy Configurations](#proxy-configurations)
     - [Firefox](#firefox)
     - [Chrome](#chrome)
-    - [Console Proxy Configuration](#console-proxy-configuration)
-    - [wget](#wget)
-    - [curl](#curl)
-  - [sudo | Special Shell Considerations](#sudo--special-shell-considerations)
-  - [pip | python](#pip--python)
-    - [urllib3 | python](#urllib3--python)
-    - [ssl | python3](#ssl--python3)
-  - [.gemrc | ruby](#gemrc--ruby)
-    - [Gemfile | ruby](#gemfile--ruby)
-    - [certs | ruby](#certs--ruby)
+    - [Console Proxy Configuration | ENV .bashrc](#console-proxy-configuration--env-bashrc)
+    - [wget | .wgetrc](#wget--wgetrc)
+    - [curl | .curlrc](#curl--curlrc)
+  - [sudo | sudoers - Special Considerations](#sudo--sudoers---special-considerations)
+  - [python pip | pip.conf](#python-pip--pipconf)
+    - [python | urllib3](#python--urllib3)
+    - [python3 | ssl](#python3--ssl)
+  - [ruby | .gemrc - Ruby Gems](#ruby--gemrc---ruby-gems)
+    - [rubygems | Gemfile](#rubygems--gemfile)
+    - [ruby | certs](#ruby--certs)
   - [javascript](#javascript)
-    - [.npmrc | node - npm js pkg manager](#npmrc--node---npm-js-pkg-manager)
-    - [.bowerrc | bower - deprecated](#bowerrc--bower---deprecated)
-    - [yarn | yarn superset js npm pkg manager](#yarn--yarn-superset-js-npm-pkg-manager)
-  - [.gitconfig | git](#gitconfig--git)
-    - [git over SSH](#git-over-ssh)
-  - [settings.json | visual studio code](#settingsjson--visual-studio-code)
+    - [node | .npmrc - npm js pkg manager](#node--npmrc---npm-js-pkg-manager)
+    - [bower | .bowerrc - deprecated](#bower--bowerrc---deprecated)
+    - [yarn | .yarnrc - superset js npm pkg manager](#yarn--yarnrc---superset-js-npm-pkg-manager)
   - [java | keytool](#java--keytool)
-  - [golang | crypto](#golang--crypto)
+  - [golang | crypto library](#golang--crypto-library)
+  - [git | .gitconfig](#git--gitconfig)
+    - [git over SSH](#git-over-ssh)
+  - [visual studio code | settings.json](#visual-studio-code--settingsjson)
   - [Operating System](#operating-system)
     - [Ubuntu & Debian Distros](#ubuntu--debian-distros)
     - [Redhat | Enterprise Linux (EL)](#redhat--enterprise-linux-el)
     - [MacOS](#macos)
     - [Windows](#windows)
+    - [Alpine (via Docker)](#alpine-via-docker)
   - [Cloud CLIs](#cloud-clis)
     - [aws | Amazon CLI tool](#aws--amazon-cli-tool)
     - [gcloud | Google Cloud CLI tool](#gcloud--google-cloud-cli-tool)
@@ -73,9 +74,9 @@ Convert the certificate from CER to CRT using openssl
 openssl x509 -inform DER -in ZscalerRootCertificate-2048-SHA256.cer -out ZscalerRootCertificate-2048-SHA256.crt
 ```
 
-### Am I MitM proxied?
+### Checking for MitM proxied certificates?
 
-No - I don't see a MitM Proxy
+No - I don't see a MitM Proxy certificates
 
 ```
 $ openssl s_client -connect pypi.python.org:443
@@ -91,7 +92,7 @@ Certificate chain
    i:/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert High Assurance EV Root CA
 ```   
 
-Yes - There is a MitM ZScaler Proxy
+Yes - There is a MitM ZScaler Proxy certificate
 
 ```
 openssl s_client -connect pypi.python.org:443
@@ -195,7 +196,7 @@ Additionally the Advanced link may not be present
 In the Chrome address bar, type “chrome://flags/#allow-insecure-localhost“
 Select the `Enable` link.
 
-### Console Proxy Configuration
+### Console Proxy Configuration | ENV .bashrc
 
 Ex: wget, git and almost every console application which connects to internet. This alone is *not* enough to trust the SSL MitM Proxy.
 
@@ -242,7 +243,7 @@ https_proxy="http://myproxy.server.com:8080/"
 ftp_proxy="http://myproxy.server.com:8080/" ...
 ```
 
-### wget 
+### wget | .wgetrc
 
 :lock: Adding Cert for `curl`
 
@@ -264,7 +265,7 @@ ftp_proxy="http://myproxy.server.com:8080/" ...
 
 
 
-### curl 
+### curl | .curlrc
 
 :lock: Adding Cert for `curl`
 
@@ -310,7 +311,7 @@ ftp-pasv
 
 ref: https://curl.se/docs/sslcerts.html
 
-## sudo | Special Shell Considerations
+## sudo | sudoers - Special Considerations
 
 `sudo` does not pass environment variables. For that you can add to sudoers
 
@@ -320,7 +321,7 @@ Defaults env_keep += "http_proxy https_proxy ftp_proxy"
 ```
 
 
-## pip | python
+## python pip | pip.conf
 
 pip3 in python3 can accept a configuration file. This file even works in venv (python3 version of virtualenv).
 
@@ -363,7 +364,7 @@ trusted-host = pypi.python.org
 ref: https://stackoverflow.com/questions/25981703/pip-install-fails-with-connection-error-ssl-certificate-verify-failed-certi
 
 
-### urllib3 | python 
+### python | urllib3
 
 Don't do this ever..
 
@@ -379,7 +380,7 @@ requests.packages.urllib3.disable_warnings()
 import urllib3 urllib3.disable_warnings()
 ```
 
-### ssl | python3
+###  python3 | ssl
 
 :lock: Proper import for OpenSSL
 
@@ -399,7 +400,7 @@ Possibly lib `requests` may not pickit up and you may need to add `ENV:REQUESTS_
 export REQUESTS_CA_BUNDLE=/etc/ssl/ca_root_certs/ZscalerRootCertificate-2048-SHA256.crt
 ```
 
-## .gemrc | ruby
+## ruby | .gemrc - Ruby Gems
 
 :lock: - Importing Trust
 
@@ -414,7 +415,7 @@ http_proxy: http://proxy:port
 :ssl_verify_mode: 0
 ```
 
-### Gemfile | ruby
+### rubygems | Gemfile 
 
 ```gemfile
 source "http://rubygems.org"
@@ -429,7 +430,7 @@ ERROR:  SSL verification error at depth 2: unable to get local issuer certificat
 ERROR:  You must add /C=US/ST=California/L=San Jose/O=Zscaler Inc./OU=Zscaler Inc./CN=Zscaler Root CA/emailAddress=support@zscaler.com to your local trusted store
 ```
 
-### certs | ruby
+### ruby | certs
 
 :lock: - Importing Trust
 
@@ -441,7 +442,7 @@ ref: https://gist.github.com/fnichol/867550
 
 ## javascript
 
-### .npmrc | node - npm js pkg manager
+### node | .npmrc - npm js pkg manager
 
 :lock: - Importing Trust
 
@@ -464,7 +465,7 @@ https-proxy=http://proxy:port/
 strict-ssl=false
 ```
 
-### .bowerrc | bower - deprecated 
+### bower | .bowerrc - deprecated 
 
 ...psst! While Bower is maintained, bower recommends using Yarn and Webpack or Parcel 
 
@@ -489,7 +490,7 @@ strict-ssl=false
 }
 ```
 
-### yarn | yarn superset js npm pkg manager
+### yarn | .yarnrc - superset js npm pkg manager
 
 ```
   Error: unable to get local issuer certificate
@@ -522,75 +523,6 @@ strict-ssl false
 ```
 
 
-## .gitconfig | git
-
-:lock: - Importing Trust
-
-```
-git config --global http.sslVerify true
-git config --global http.sslCAInfo path/to/ca-bundle.crt
-```
-
-```
-$> git config — global http.proxy $HTTP_PROXY
-$> git config — global https.proxy $HTTP_PROXY
-```
-
--- or --
-
-```ini
-[http]
-    proxy = http://proxy:port
-[https]
-    proxy = http://proxy:port
-```
-
-:anger: Insecure - Not Using Proxy Trust
-
-`git config --global http.sslVerify false`
-
-### git over SSH
-This is an example, and one is packaged into the config that ships. Add the following to your `~/.ssh/config` file:
-
-```
-host github.com
-     port 22
-     user git
-     ProxyCommand connect-proxy -S <YOUR.SSH-PROXY.URL:PORT> %h %p
-````
-
-
-## settings.json | visual studio code
-
-:lock: - Importing Trust
-
-* Ensure certificates are installed and trusted in the OS System.
-* VScode settings, Application, Proxy, and UNCHECK the "System certificates" option. 
-* Restart vscode and RE-CHECK it. 
-* Restart again, and it works.
-
-(Code snippet, VS doesnt have its own override)
-
-`https://github.com/microsoft/vscode/blob/main/src/vs/platform/request/common/request.ts`
-
-```ts
-  'http.systemCertificates': {
-    type: 'boolean',
-    default: true,
-    description: localize('systemCertificates', "Controls whether CA certificates should be loaded from the OS. (On Windows and macOS, a reload of the window is required after turning this off.)"),
-    restricted: true
-  }
-```      
-
-:anger: Insecure - Not Using Proxy Trust
-
-```json
-{
-  "http.proxy": "http://proxy:port/",
-  "http.proxyStrictSSL": false
-}
-```
-
 ## java | keytool 
 
 Java and Gradle packages use keytool and keystores.
@@ -603,7 +535,7 @@ Alternative flags
 
 `keytool -import -trustcacerts -alias ZscalerRootCertificate-2048-SHA256 -file /etc/ssl/ca_root_certs/ZscalerRootCertificate-2048-SHA256.crt -keystore <path to JRE installation>/lib/security/cacerts`
 
-## golang | crypto 
+## golang | crypto library
 
 :lock: - Importing Trust
 
@@ -665,10 +597,78 @@ Comma-separated list of glob patterns (in the syntax of Go's path.Match)
 
 ref: https://stackoverflow.com/a/58306008/1569557
 
+## git | .gitconfig
+
+:lock: - Importing Trust
+
+```
+git config --global http.sslVerify true
+git config --global http.sslCAInfo path/to/ca-bundle.crt
+```
+
+```
+$> git config — global http.proxy $HTTP_PROXY
+$> git config — global https.proxy $HTTP_PROXY
+```
+
+-- or --
+
+```ini
+[http]
+    proxy = http://proxy:port
+[https]
+    proxy = http://proxy:port
+```
+
+:anger: Insecure - Not Using Proxy Trust
+
+`git config --global http.sslVerify false`
+
+### git over SSH
+This is an example, and one is packaged into the config that ships. Add the following to your `~/.ssh/config` file:
+
+```
+host github.com
+     port 22
+     user git
+     ProxyCommand connect-proxy -S <YOUR.SSH-PROXY.URL:PORT> %h %p
+````
+
+
+## visual studio code | settings.json
+
+:lock: - Importing Trust
+
+* Ensure certificates are installed and trusted in the OS System.
+* VScode settings, Application, Proxy, and UNCHECK the "System certificates" option. 
+* Restart vscode and RE-CHECK it. 
+* Restart again, and it works.
+
+(Code snippet, VS doesnt have its own override)
+
+`https://github.com/microsoft/vscode/blob/main/src/vs/platform/request/common/request.ts`
+
+```ts
+  'http.systemCertificates': {
+    type: 'boolean',
+    default: true,
+    description: localize('systemCertificates', "Controls whether CA certificates should be loaded from the OS. (On Windows and macOS, a reload of the window is required after turning this off.)"),
+    restricted: true
+  }
+```      
+
+:anger: Insecure - Not Using Proxy Trust
+
+```json
+{
+  "http.proxy": "http://proxy:port/",
+  "http.proxyStrictSSL": false
+}
+```
+
 ## Operating System 
 
 ### Ubuntu & Debian Distros
-
 
 :lock: - Importing Trust
 
@@ -712,8 +712,11 @@ Acquire::https::Verify-Host "false";
 
 Enable the dynamic CA configuration feature: 
 
+(Note: if ca-certificates is not installed, you may need to sideload it)
+
 ```
-sudo yum install ca-certificates
+# sudo yum install ca-certificates # possibly doesn't work 
+# curl http://mirror.centos.org/altarch/7/updates/aarch64/Packages/ca-certificates-2021.2.50-72.el7_9.noarch.rpm && rpm -Uvh ca-certficates.rpm 
 sudo update-ca-trust force-enable
 sudo cp ca-certificates/ZscalerRootCertificate-2048-SHA256.crt /etc/pki/ca-trust/source/anchors/
 sudo update-ca-trust extract
@@ -734,6 +737,23 @@ sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keyc
 ```
 certutil -addstore -f "ROOT" ZscalerRootCertificate-2048-SHA256.crt
 ```
+
+### Alpine (via Docker)
+
+:lock: - Importing Trust
+
+Copy the `crt` to the Docker container and append it to the bottom of `/etc/ssl/certs/ca-certificates.crt`
+
+```docker
+FROM alpine:latest
+COPY ZscalerRootCertificate-2048-SHA256.crt /usr/local/share/ca-certificates/ZscalerRootCertificate-2048-SHA256.crt
+RUN cat /usr/local/share/ca-certificates/ZscalerRootCertificate-2048-SHA256.crt >> /etc/ssl/certs/ca-certificates.crt
+apk --no-cache add packagename 
+```
+
+:anger: - Skip SSL
+
+https://gitlab.alpinelinux.org/alpine/apk-tools/-/issues/10650 (no options)
 
 #### ENV Variables
 
