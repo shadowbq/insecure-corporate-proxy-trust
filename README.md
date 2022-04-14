@@ -637,7 +637,7 @@ var certDirectories = []string{
 ref: https://forfuncsake.github.io/post/2017/08/trust-extra-ca-cert-in-go-app/
 
 
-:anger: Skip SSL 
+:anger: - Skip SSL for explicit domains
 	
 ```	
 GOINSECURE
