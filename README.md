@@ -36,6 +36,7 @@ All to often the internet provides ':anger: - The bad way' to shortcut these pol
   - [golang | crypto library](#golang--crypto-library)
   - [git | .gitconfig](#git--gitconfig)
     - [git over SSH](#git-over-ssh)
+  - [kubectl | .kubeconfig - Kubernetes CLI tool](#kubectl--kubeconfig---kubernetes-cli-tool)
   - [visual studio code | settings.json](#visual-studio-code--settingsjson)
   - [Operating System](#operating-system)
     - [Ubuntu & Debian Distros](#ubuntu--debian-distros)
@@ -634,6 +635,33 @@ host github.com
      ProxyCommand connect-proxy -S <YOUR.SSH-PROXY.URL:PORT> %h %p
 ````
 
+## kubectl | .kubeconfig - Kubernetes CLI tool
+
+:lock: - Importing Trust
+
+Replace existing realPK key from k8s server with Proxy cert
+
+```
+cp \etc\ssl\share\ZscalerRootCertificate-2048-SHA256.crt ~\.kube\ZscalerRootCertificate-2048-SHA256.crt
+vi .\kube\config
+```
+
+find and replace `certificate-authority-data: <realEncodedPublicKey>` with file name location for the cluster.
+
+```yaml
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: ZscalerRootCertificate-2048-SHA256.crt
+    server: https://1.2.3.4:6443
+  name: kubernetes
+```
+
+Tip: Use a `kubectl context` for switching between policy enforcement and non-policy enforced networks. 
+
+:anger: - Skip SSL
+
+`kubectl --insecure-skip-tls-verify=true`
 
 ## visual studio code | settings.json
 
