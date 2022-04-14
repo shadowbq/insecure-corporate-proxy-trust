@@ -657,11 +657,18 @@ clusters:
   name: kubernetes
 ```
 
+Local Networks: Remember to exclude k8s servers that are not external or running in docker contexts.
+
+```
+export no_proxy=$no_proxy,*.docker.internal
+export NO_PROXY=$no_proxy
+```
+
 Tip: Use a `kubectl context` for switching between policy enforcement and non-policy enforced networks. 
 
 :anger: - Skip SSL
 
-`kubectl --insecure-skip-tls-verify=true`
+`kubectl --insecure-skip-tls-verify=true cluster-info dump`
 
 ## visual studio code | settings.json
 
