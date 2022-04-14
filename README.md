@@ -36,6 +36,7 @@ All to often the internet provides ':anger: - The bad way' to shortcut these pol
     - [git over SSH](#git-over-ssh)
   - [settings.json | visual studio code](#settingsjson--visual-studio-code)
   - [java | keytool](#java--keytool)
+  - [golang | crypto](#golang--crypto)
   - [Operating System](#operating-system)
     - [Ubuntu & Debian Distros](#ubuntu--debian-distros)
     - [Redhat | Enterprise Linux (EL)](#redhat--enterprise-linux-el)
@@ -602,6 +603,64 @@ Alternative flags
 
 `keytool -import -trustcacerts -alias ZscalerRootCertificate-2048-SHA256 -file /etc/ssl/ca_root_certs/ZscalerRootCertificate-2048-SHA256.crt -keystore <path to JRE installation>/lib/security/cacerts`
 
+## golang | crypto 
+
+:lock: - Importing Trust
+
+Install into a system directory the crt file. Only option.
+
+```
+// Copyright 2015 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+package x509
+
+// Possible certificate files; stop after finding one.
+var certFiles = []string{
+	"/etc/ssl/certs/ca-certificates.crt",                // Debian/Ubuntu/Gentoo etc.
+	"/etc/pki/tls/certs/ca-bundle.crt",                  // Fedora/RHEL 6
+	"/etc/ssl/ca-bundle.pem",                            // OpenSUSE
+	"/etc/pki/tls/cacert.pem",                           // OpenELEC
+	"/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem", // CentOS/RHEL 7
+	"/etc/ssl/cert.pem",                                 // Alpine Linux
+}
+
+// Possible directories with certificate files; all will be read.
+var certDirectories = []string{
+	"/etc/ssl/certs",               // SLES10/SLES11, https://golang.org/issue/12139
+	"/etc/pki/tls/certs",           // Fedora/RHEL
+	"/system/etc/security/cacerts", // Android
+}
+```
+
+ref: https://forfuncsake.github.io/post/2017/08/trust-extra-ca-cert-in-go-app/
+
+
+:anger: Skip SSL 
+	
+```	
+GOINSECURE
+	Comma-separated list of glob patterns (in the syntax of Go's path.Match)
+	of module path prefixes that should always be fetched in an insecure
+	manner. Only applies to dependencies that are being fetched directly.
+	GOINSECURE does not disable checksum database validation. GOPRIVATE or
+	GONOSUMDB may be used to achieve that.
+GOPROXY
+	URL of Go module proxy. See https://golang.org/ref/mod#environment-variables
+	and https://golang.org/ref/mod#module-proxy for details.
+GOPRIVATE, GONOPROXY, GONOSUMDB
+	Comma-separated list of glob patterns (in the syntax of Go's path.Match)
+	of module path prefixes that should always be fetched directly
+	or that should not be compared against the checksum database.
+	See https://golang.org/ref/mod#private-modules.
+```
+
+Comma-separated list of glob patterns (in the syntax of Go's path.Match)
+
+`GOINSECURE="gitlab.example.lan/*/*" goup -v .`
+
+ref: https://stackoverflow.com/a/58306008/1569557
 
 ## Operating System 
 
