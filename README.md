@@ -633,6 +633,9 @@ var certDirectories = []string{
 	"/system/etc/security/cacerts", // Android
 }
 ```
+ref: https://go.dev/src/crypto/x509/root_linux.go
+
+Option: Add an additional location when creating the application
 
 ref: https://forfuncsake.github.io/post/2017/08/trust-extra-ca-cert-in-go-app/
 
