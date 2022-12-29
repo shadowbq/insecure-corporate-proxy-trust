@@ -1,13 +1,17 @@
-# Insecure Corporate Proxy Trust
+# (In-)Secure Corporate Proxy Trust
 
 :lock: - The right way. Trust the proxy.  
 :anger: - The bad way. Skip Trusts.   
 
-Dealing with proxies that mess up our trust requires configuration to keep things `secure`. Policies that require proxy https traffic, as well as http is common in government and large corporate companies. Some proxies also [man-in-the-middle](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) the secure connection generating new certificates on the fly. 
+## Summary 
 
-All to often the internet provides ':anger: - The bad way' to shortcut these policies, but not breaking trust ':lock: - The right way' should be our solution even if it means using these MITM certificates. 
+Dealing with network SSL proxies that break the built-in trusts of tools can require simple to complex configuration to keep things `Secure`. 
 
-**Note: Make Sure your Date & Time is correct. This is step #1. Too large of time drift will cause SSL to fail.**
+Many corporations have IT/SEC policies that require proxing https traffic, as well as http traffic. You will find this is even more common in government and large corporate companies. Some network proxies known as 'Break and Inspect' or also as [man-in-the-middle](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) the secure connection generating new certificates on the fly. 
+
+All to often the internet comments (stack overflow etc) provide ':anger: - The bad way' to shortcut these policies, but not breaking trust ':lock: - The right way' should be our solution even if it means using these MITM certificates. 
+
+## TOC
 
 - [Insecure Corporate Proxy Trust](#insecure-corporate-proxy-trust)
   - [Fetching the Proxy CA PEM](#fetching-the-proxy-ca-pem)
@@ -147,6 +151,10 @@ openssl s_client -connect pypi.python.org:443
 [...]
 Verification error: unable to get local issuer certificate
 ```
+
+## Concerns
+
+**Note: Make Sure your Date & Time is correct. This is step #1. Too large of time drift will cause SSL to fail.**
 
 ## Browser Trusts
 
