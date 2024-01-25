@@ -772,6 +772,12 @@ Acquire::https::Verify-Peer "false";
 Acquire::https::Verify-Host "false";
 ```
 
+:anger: Insecure - One time apt udpate
+
+```
+sudo apt-get -o “Acquire::https::Verify-Peer=false” update
+```
+
 ### Redhat | Enterprise Linux (EL)
 
 :lock: - Importing Trust
