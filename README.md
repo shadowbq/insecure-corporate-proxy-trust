@@ -13,45 +13,62 @@ All to often the internet comments (stack overflow etc) provide ':anger: - The b
 
 ## TOC
 
-- [Insecure Corporate Proxy Trust](#insecure-corporate-proxy-trust)
-  - [Fetching the Proxy CA PEM](#fetching-the-proxy-ca-pem)
-    - [Export from a Managed OS](#export-from-a-managed-os)
-    - [Convert CER(DER) to a CRT(PEM)](#convert-cerder-to-a-crtpem)
-    - [Checking for MitM proxied certificates?](#checking-for-mitm-proxied-certificates)
-    - [Is the Intermediate CA Trusted?](#is-the-intermediate-ca-trusted)
-  - [Browser Trusts](#browser-trusts)
-    - [Proxy Configurations](#proxy-configurations)
-    - [Firefox](#firefox)
-    - [Chrome](#chrome)
-    - [Console Proxy Configuration | ENV .bashrc](#console-proxy-configuration--env-bashrc)
-    - [wget | .wgetrc](#wget--wgetrc)
-    - [curl | .curlrc](#curl--curlrc)
-  - [sudo | sudoers - Special Considerations](#sudo--sudoers---special-considerations)
-  - [python pip | pip.conf](#python-pip--pipconf)
-    - [python | urllib3](#python--urllib3)
-    - [python3 | ssl](#python3--ssl)
-  - [ruby | .gemrc - Ruby Gems](#ruby--gemrc---ruby-gems)
-    - [rubygems | Gemfile](#rubygems--gemfile)
-    - [ruby | certs](#ruby--certs)
-  - [javascript](#javascript)
-    - [node | .npmrc - npm js pkg manager](#node--npmrc---npm-js-pkg-manager)
-    - [bower | .bowerrc - deprecated](#bower--bowerrc---deprecated)
-    - [yarn | .yarnrc - superset js npm pkg manager](#yarn--yarnrc---superset-js-npm-pkg-manager)
-  - [java | keytool](#java--keytool)
-  - [golang | crypto library](#golang--crypto-library)
-  - [git | .gitconfig](#git--gitconfig)
-    - [git over SSH](#git-over-ssh)
-  - [kubectl | .kubeconfig - Kubernetes CLI tool](#kubectl--kubeconfig---kubernetes-cli-tool)
-  - [visual studio code | settings.json](#visual-studio-code--settingsjson)
-  - [Operating System](#operating-system)
-    - [Ubuntu & Debian Distros](#ubuntu--debian-distros)
-    - [Redhat | Enterprise Linux (EL)](#redhat--enterprise-linux-el)
-    - [MacOS](#macos)
-    - [Windows](#windows)
-    - [Alpine (via Docker)](#alpine-via-docker)
-  - [Cloud CLIs](#cloud-clis)
-    - [aws | Amazon CLI tool](#aws--amazon-cli-tool)
-    - [gcloud | Google Cloud CLI tool](#gcloud--google-cloud-cli-tool)
+<!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
+
+- [Fetching the Proxy CA PEM ](#fetching-the-proxy-ca-pem)
+   * [Export from a Managed OS](#export-from-a-managed-os)
+      + [Windows](#windows)
+      + [MacOS](#macos)
+   * [Convert CER(DER) to a CRT(PEM)](#convert-cerder-to-a-crtpem)
+   * [Checking for MitM proxied certificates?](#checking-for-mitm-proxied-certificates)
+   * [Is the Intermediate CA Trusted?](#is-the-intermediate-ca-trusted)
+- [Concerns ](#concerns)
+   * [Date - Time](#date---time)
+   * [Pinning](#pinning)
+   * [MTLS](#mtls)
+- [Operating System - System wide configurations](#operating-system---system-wide-configurations)
+   * [Ubuntu & Debian Distros](#ubuntu--debian-distros)
+      + [apt](#apt)
+   * [Redhat | Enterprise Linux (EL)](#redhat--enterprise-linux-el)
+   * [MacOS](#macos-1)
+   * [Windows](#windows-1)
+   * [Alpine (via Docker)](#alpine-via-docker)
+      + [ENV Variables](#env-variables)
+- [Browser Trusts](#browser-trusts)
+   * [Proxy Configurations](#proxy-configurations)
+      + [WPAD Domains](#wpad-domains)
+   * [Firefox](#firefox)
+   * [Chrome](#chrome)
+      + [Bypass “Your connection is not private” Message](#bypass-your-connection-is-not-private-message)
+      + [Using Flags](#using-flags)
+- [Console Browsers](#console-browsers)
+   * [Console Proxy Configuration | ENV .bashrc](#console-proxy-configuration--env-bashrc)
+   * [wget | .wgetrc](#wget--wgetrc)
+      + [`~/.wgetrc` Configuration](#wgetrc-configuration)
+   * [curl | .curlrc](#curl--curlrc)
+      + [`.curlrc` Configuration](#curlrc-configuration)
+- [sudo | sudoers - Special Considerations](#sudo--sudoers---special-considerations)
+- [python pip | pip.conf](#python-pip--pipconf)
+   * [python | urllib3](#python--urllib3)
+   * [python3 | ssl](#python3--ssl)
+- [ruby | .gemrc - Ruby Gems](#ruby--gemrc---ruby-gems)
+   * [rubygems | Gemfile ](#rubygems--gemfile)
+   * [ruby | certs](#ruby--certs)
+- [javascript](#javascript)
+   * [node | .npmrc - npm js pkg manager](#node--npmrc---npm-js-pkg-manager)
+   * [bower | .bowerrc - deprecated ](#bower--bowerrc---deprecated)
+   * [yarn | .yarnrc - superset js npm pkg manager](#yarn--yarnrc---superset-js-npm-pkg-manager)
+- [java | keytool ](#java--keytool)
+- [golang | crypto library](#golang--crypto-library)
+- [git | .gitconfig](#git--gitconfig)
+   * [git over SSH](#git-over-ssh)
+- [kubectl | .kubeconfig - Kubernetes CLI tool](#kubectl--kubeconfig---kubernetes-cli-tool)
+- [visual studio code | settings.json](#visual-studio-code--settingsjson)
+- [Cloud CLIs ](#cloud-clis)
+   * [aws | Amazon CLI tool](#aws--amazon-cli-tool)
+   * [gcloud | Google Cloud CLI tool](#gcloud--google-cloud-cli-tool)
+
+<!-- TOC end -->
 
 ## Fetching the Proxy CA PEM 
 
@@ -152,9 +169,131 @@ openssl s_client -connect pypi.python.org:443
 Verification error: unable to get local issuer certificate
 ```
 
-## Concerns
+## Concerns 
 
-**Note: Make Sure your Date & Time is correct. This is step #1. Too large of time drift will cause SSL to fail.**
+### Date - Time
+
+* Make Sure your Date & Time is correct. This is step #1. Too large of time drift will cause SSL to fail. Use chronyd, ntpd, or other NTP protocol related applications to ensure time consistency. 
+
+### Pinning
+
+* HPKP (Obsolete) - HTTP Public Key Pinning (HPKP) is an obsolete Internet security mechanism delivered via an HTTP header which allows HTTPS websites to resist impersonation by attackers using misissued or otherwise fraudulent digital certificates. A server uses it to deliver to the client (e.g. web browser) a set of hashes of public keys that must appear in the certificate chain of future connections to the same domain name. Due to HPKP mechanism complexity and possibility of accidental misuse (potentially causing a lockout condition by system administrators), in 2017 browsers deprecated HPKP and in 2018 removed its support in favor of Certificate Transparency. (https://en.wikipedia.org/wiki/HTTP_Public_Key_Pinning)
+
+* Expect-CT (Depricated 2021) - HPKP is being replaced by the reactive Certificate Transparency framework coupled with the Expect-CT header. Expect-CT header allows sites to opt in to the Certificate Transparency framework, in report or enforcement mode, based on the readiness of the application.
+
+* [Certificate Transparency](https://certificate.transparency.dev/#TOC-What-is-an-SCT-) -  Signed certificate timestamp (SCT). CAs attach SCTs to a certificate using an X.509v3 extension. They sign the certificate and deliver the certificate to the server operator. (There are also two other, less common, ways of doing this: OCSP stapling and TLS extension.) CT doesn’t require server modification, so server operators can manage SSL certificates the way they always have. The SCTs accompany the certificate throughout its lifetime. A server must deliver the SCT with the certificate during a TLS handshake.  (https://en.wikipedia.org/wiki/Certificate_Transparency)  Both Safari and Chrome user agents require at least 2 SCTs, depending on certificate lifetimes.
+
+* It is also worth mention that Pinning is not Stapling. Stapling sends both the certificate and OCSP responder information in the same request to avoid the additional fetches the client should perform during path validations.
+
+### MTLS
+
+* MTLS - Mutual TLS, or mTLS for short, is a method for mutual authentication. mTLS ensures that the parties at each end of a network connection are who they claim to be by verifying that they both have the correct private key within a TLS exchange process. MTLS can not be intercepted/decrypted, but it can be proxied via PassThru. 
+
+## Operating System - System wide configurations
+
+### Ubuntu & Debian Distros
+
+:lock: - Importing Trust
+
+Import the Certificate into the system trust of Ubuntu
+
+```shell
+cp /etc/ssl/ca_root_certs/ZscalerRootCertificate-2048-SHA256.crt /usr/local/share/ca-certificates
+chmod 644 /usr/local/share/ca-certificates/ZscalerRootCertificate-2048-SHA256.crt
+sudo update-ca-certificates
+```
+
+#### apt
+
+:lock: - Importing Trust
+
+A new file needs to added to `/etc/apt/apt.conf.d/` called `00-SSL-PROXIED`
+
+```
+Acquire {
+  HTTP::proxy "http://username:password@yourproxyaddress:proxyport";
+  HTTPS::proxy "http://username:password@yourproxyaddress:proxyport";
+  HTTPS::Verify-Peer "true";
+  CAInfo "/path/to/ca/certs.pem";
+}
+```
+
+:anger: Insecure - Not Using Proxy Trust
+
+A new file needs to added to `/etc/apt/apt.conf.d/` called `00-SSL-INSECURE`
+
+```
+// Do not verify peer certificate
+Acquire::https::Verify-Peer "false";
+// Do not verify that certificate name matches server name
+Acquire::https::Verify-Host "false";
+```
+
+:anger: Insecure - One time apt udpate
+
+```
+sudo apt-get -o “Acquire::https::Verify-Peer=false” update
+```
+
+### Redhat | Enterprise Linux (EL)
+
+:lock: - Importing Trust
+
+Enable the dynamic CA configuration feature: 
+
+(Note: if ca-certificates is not installed, you may need to sideload it)
+
+```
+# sudo yum install ca-certificates # possibly doesn't work 
+# curl http://mirror.centos.org/altarch/7/updates/aarch64/Packages/ca-certificates-2021.2.50-72.el7_9.noarch.rpm && rpm -Uvh ca-certficates.rpm 
+sudo update-ca-trust force-enable
+sudo cp ca-certificates/ZscalerRootCertificate-2048-SHA256.crt /etc/pki/ca-trust/source/anchors/
+sudo update-ca-trust extract
+```
+
+### MacOS
+
+:lock: - Importing Trust
+
+```
+sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ~/ZscalerRootCertificate-2048-SHA256.crt
+```
+
+### Windows
+
+:lock: - Importing Trust
+
+```
+certutil -addstore -f "ROOT" ZscalerRootCertificate-2048-SHA256.crt
+```
+
+### Alpine (via Docker)
+
+:lock: - Importing Trust
+
+Copy the `crt` to the Docker container and append it to the bottom of `/etc/ssl/certs/ca-certificates.crt`
+
+```docker
+FROM alpine:latest
+COPY ZscalerRootCertificate-2048-SHA256.crt /usr/local/share/ca-certificates/ZscalerRootCertificate-2048-SHA256.crt
+RUN cat /usr/local/share/ca-certificates/ZscalerRootCertificate-2048-SHA256.crt >> /etc/ssl/certs/ca-certificates.crt
+apk --no-cache add packagename 
+```
+
+:anger: - Skip SSL
+
+https://gitlab.alpinelinux.org/alpine/apk-tools/-/issues/10650 (no options)
+
+#### ENV Variables
+
+Setting CLI ENV proxies for Windows (git, etc.)
+
+```shell
+setx /s HTTP_PROXY http://proxy:port/ /m
+setx /s HTTPS_PROXY http://proxy:port/ /m
+setx /s NO_PROXY .localhost,.domain.local /m
+```
+
 
 ## Browser Trusts
 
@@ -227,6 +366,10 @@ Additionally the Advanced link may not be present
 
 In the Chrome address bar, type “chrome://flags/#allow-insecure-localhost“
 Select the `Enable` link.
+
+## Console Browsers
+
+Console browsers might need specific configuration, but often will listen to system wide settings. 
 
 ### Console Proxy Configuration | ENV .bashrc
 
@@ -732,110 +875,6 @@ Tip: Use a `kubectl context` for switching between policy enforcement and non-po
 }
 ```
 
-## Operating System 
-
-### Ubuntu & Debian Distros
-
-:lock: - Importing Trust
-
-Import the Certificate into the system trust of Ubuntu
-
-```shell
-cp /etc/ssl/ca_root_certs/ZscalerRootCertificate-2048-SHA256.crt /usr/local/share/ca-certificates
-chmod 644 /usr/local/share/ca-certificates/ZscalerRootCertificate-2048-SHA256.crt
-sudo update-ca-certificates
-```
-
-#### apt
-
-:lock: - Importing Trust
-
-A new file needs to added to `/etc/apt/apt.conf.d/` called `00-SSL-PROXIED`
-
-```
-Acquire {
-  HTTP::proxy "http://username:password@yourproxyaddress:proxyport";
-  HTTPS::proxy "http://username:password@yourproxyaddress:proxyport";
-  HTTPS::Verify-Peer "true";
-  CAInfo "/path/to/ca/certs.pem";
-}
-```
-
-:anger: Insecure - Not Using Proxy Trust
-
-A new file needs to added to `/etc/apt/apt.conf.d/` called `00-SSL-INSECURE`
-
-```
-// Do not verify peer certificate
-Acquire::https::Verify-Peer "false";
-// Do not verify that certificate name matches server name
-Acquire::https::Verify-Host "false";
-```
-
-:anger: Insecure - One time apt udpate
-
-```
-sudo apt-get -o “Acquire::https::Verify-Peer=false” update
-```
-
-### Redhat | Enterprise Linux (EL)
-
-:lock: - Importing Trust
-
-Enable the dynamic CA configuration feature: 
-
-(Note: if ca-certificates is not installed, you may need to sideload it)
-
-```
-# sudo yum install ca-certificates # possibly doesn't work 
-# curl http://mirror.centos.org/altarch/7/updates/aarch64/Packages/ca-certificates-2021.2.50-72.el7_9.noarch.rpm && rpm -Uvh ca-certficates.rpm 
-sudo update-ca-trust force-enable
-sudo cp ca-certificates/ZscalerRootCertificate-2048-SHA256.crt /etc/pki/ca-trust/source/anchors/
-sudo update-ca-trust extract
-```
-
-### MacOS
-
-:lock: - Importing Trust
-
-```
-sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ~/ZscalerRootCertificate-2048-SHA256.crt
-```
-
-### Windows
-
-:lock: - Importing Trust
-
-```
-certutil -addstore -f "ROOT" ZscalerRootCertificate-2048-SHA256.crt
-```
-
-### Alpine (via Docker)
-
-:lock: - Importing Trust
-
-Copy the `crt` to the Docker container and append it to the bottom of `/etc/ssl/certs/ca-certificates.crt`
-
-```docker
-FROM alpine:latest
-COPY ZscalerRootCertificate-2048-SHA256.crt /usr/local/share/ca-certificates/ZscalerRootCertificate-2048-SHA256.crt
-RUN cat /usr/local/share/ca-certificates/ZscalerRootCertificate-2048-SHA256.crt >> /etc/ssl/certs/ca-certificates.crt
-apk --no-cache add packagename 
-```
-
-:anger: - Skip SSL
-
-https://gitlab.alpinelinux.org/alpine/apk-tools/-/issues/10650 (no options)
-
-#### ENV Variables
-
-Setting CLI ENV proxies for Windows (git, etc.)
-
-```shell
-setx /s HTTP_PROXY http://proxy:port/ /m
-setx /s HTTPS_PROXY http://proxy:port/ /m
-setx /s NO_PROXY .localhost,.domain.local /m
-```
 
 
 ## Cloud CLIs 
@@ -891,3 +930,5 @@ gcloud config set auth/disable_ssl_validation True
 ```
 
 ref: https://cloud.google.com/sdk/gcloud/reference/config/set
+
+        
