@@ -235,7 +235,7 @@ Acquire::https::Verify-Host "false";
 sudo apt-get -o “Acquire::https::Verify-Peer=false” update
 ```
 
-### Redhat | Enterprise Linux (EL)
+### Redhat | Enterprise Linux (EL) - Rocky/CentOS/Fedora/Scientific
 
 :lock: - Importing Trust
 
@@ -250,6 +250,21 @@ sudo update-ca-trust force-enable
 sudo cp ca-certificates/ZscalerRootCertificate-2048-SHA256.crt /etc/pki/ca-trust/source/anchors/
 sudo update-ca-trust extract
 ```
+
+### OpenSUSE 
+
+:lock: - Importing Trust
+
+Enable the dynamic CA configuration feature: 
+
+(Note: if ca-certificates is not installed, you may need to sideload it)
+
+```
+sudo update-ca-trust force-enable
+sudo cp ca-certificates/ZscalerRootCertificate-2048-SHA256.crt /etc/pki/trust/anchors/.
+sudo update-ca-trust extract
+```
+
 
 ### MacOS
 
@@ -283,6 +298,14 @@ apk --no-cache add packagename
 :anger: - Skip SSL
 
 https://gitlab.alpinelinux.org/alpine/apk-tools/-/issues/10650 (no options)
+
+### General Image (Docker Image)
+
+```docker
+CERT_DIR=(openssl version -d | cut -f2 -d \")/certs
+COPY src/ZscalerRootCertificate-2048-SHA256.crt $CERT_DIR/ZscalerRootCertificate-2048-SHA256.crt
+RUN update-ca-certificates
+```
 
 #### ENV Variables
 
